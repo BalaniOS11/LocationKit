@@ -1,9 +1,9 @@
 import Foundation
 
 public actor LocationSelectionSession {
-    public private(set) var selectedCountry: Country?
-    public private(set) var selectedState: State?
-    public private(set) var selectedCity: City?
+    public private(set) var selectedCountry: CountryDatum?
+    public private(set) var selectedState: StateDatum?
+    public private(set) var selectedCity: CityDatum?
 
     private let repository: LocationRepository
 
@@ -11,11 +11,11 @@ public actor LocationSelectionSession {
         self.repository = repository
     }
 
-    public func loadCountries(forceRefresh: Bool = false) async throws -> [Country] {
+    public func loadCountries(forceRefresh: Bool = false) async throws -> [CountryDatum] {
         try await repository.countries(forceRefresh: forceRefresh)
     }
 
-    public func selectCountry(_ country: Country?, forceRefresh: Bool = false) async throws -> [State] {
+    public func selectCountry(_ country: CountryDatum?, forceRefresh: Bool = false) async throws -> [StateDatum] {
         if selectedCountry?.id != country?.id {
             selectedCountry = country
             selectedState = nil
@@ -25,7 +25,7 @@ public actor LocationSelectionSession {
         return try await repository.states(countryId: id, forceRefresh: forceRefresh)
     }
 
-    public func selectState(_ state: State?, forceRefresh: Bool = false) async throws -> [City] {
+    public func selectState(_ state: StateDatum?, forceRefresh: Bool = false) async throws -> [CityDatum] {
         if selectedState?.id != state?.id {
             selectedState = state
             selectedCity = nil
@@ -34,7 +34,7 @@ public actor LocationSelectionSession {
         return try await repository.cities(stateId: id, forceRefresh: forceRefresh)
     }
 
-    public func selectCity(_ city: City?) {
+    public func selectCity(_ city: CityDatum?) {
         selectedCity = city
     }
 

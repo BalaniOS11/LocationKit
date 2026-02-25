@@ -21,9 +21,9 @@ public enum LocationKitError: Error, LocalizedError, Sendable, Equatable {
 }
 
 public protocol LocationProviding: Sendable {
-    func fetchCountries() async throws -> [Country]
-    func fetchStates(countryId: Int) async throws -> [State]
-    func fetchCities(stateId: Int) async throws -> [City]
+    func fetchCountries() async throws -> [CountryDatum]
+    func fetchStates(countryId: Int) async throws -> [StateDatum]
+    func fetchCities(stateId: Int) async throws -> [CityDatum]
 }
 
 public struct LocationAPIConfig: Sendable {
@@ -66,18 +66,18 @@ public struct RemoteLocationProvider: LocationProviding {
         self.decoder = decoder
     }
 
-    public func fetchCountries() async throws -> [Country] {
+    public func fetchCountries() async throws -> [CountryDatum] {
         try await fetch(path: config.countriesPath, queryItems: [])
     }
 
-    public func fetchStates(countryId: Int) async throws -> [State] {
+    public func fetchStates(countryId: Int) async throws -> [StateDatum] {
         try await fetch(
             path: config.statesPath,
             queryItems: [.init(name: config.countryQueryKey, value: String(countryId))]
         )
     }
 
-    public func fetchCities(stateId: Int) async throws -> [City] {
+    public func fetchCities(stateId: Int) async throws -> [CityDatum] {
         try await fetch(
             path: config.citiesPath,
             queryItems: [.init(name: config.stateQueryKey, value: String(stateId))]
@@ -127,15 +127,15 @@ public struct FallbackLocationProvider: LocationProviding {
         self.fallback = fallback
     }
 
-    public func fetchCountries() async throws -> [Country] {
+    public func fetchCountries() async throws -> [CountryDatum] {
         do { return try await primary.fetchCountries() } catch { return try await fallback.fetchCountries() }
     }
 
-    public func fetchStates(countryId: Int) async throws -> [State] {
+    public func fetchStates(countryId: Int) async throws -> [StateDatum] {
         do { return try await primary.fetchStates(countryId: countryId) } catch { return try await fallback.fetchStates(countryId: countryId) }
     }
 
-    public func fetchCities(stateId: Int) async throws -> [City] {
+    public func fetchCities(stateId: Int) async throws -> [CityDatum] {
         do { return try await primary.fetchCities(stateId: stateId) } catch { return try await fallback.fetchCities(stateId: stateId) }
     }
 }

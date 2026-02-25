@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Country: Identifiable, Codable, Hashable, Sendable {
+public struct CountryDatum: Identifiable, Codable, Hashable, Sendable {
     public let id: Int
     public let name: String
 
@@ -17,7 +17,7 @@ public struct Country: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-public struct State: Identifiable, Codable, Hashable, Sendable {
+public struct StateDatum: Identifiable, Codable, Hashable, Sendable {
     public let id: Int
     public let name: String
     public let countryId: Int
@@ -35,7 +35,7 @@ public struct State: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-public struct City: Identifiable, Codable, Hashable, Sendable {
+public struct CityDatum: Identifiable, Codable, Hashable, Sendable {
     public let id: Int
     public let name: String
     public let stateId: Int

@@ -17,17 +17,17 @@ public struct CombinedJSONLocationProvider: LocationProviding {
         self.store = Store(bundle: bundle, decoder: decoder, resourceName: resourceName)
     }
 
-    public func fetchCountries() async throws -> [Country] {
+    public func fetchCountries() async throws -> [CountryDatum] {
         let cache = try await store.load()
         return cache.countries
     }
 
-    public func fetchStates(countryId: Int) async throws -> [State] {
+    public func fetchStates(countryId: Int) async throws -> [StateDatum] {
         let cache = try await store.load()
         return cache.statesByCountryId[countryId] ?? []
     }
 
-    public func fetchCities(stateId: Int) async throws -> [City] {
+    public func fetchCities(stateId: Int) async throws -> [CityDatum] {
         let cache = try await store.load()
         return cache.citiesByStateId[stateId] ?? []
     }
@@ -35,9 +35,9 @@ public struct CombinedJSONLocationProvider: LocationProviding {
 
 private actor Store {
     struct Cache: Sendable {
-        let countries: [Country]
-        let statesByCountryId: [Int: [State]]
-        let citiesByStateId: [Int: [City]]
+        let countries: [CountryDatum]
+        let statesByCountryId: [Int: [StateDatum]]
+        let citiesByStateId: [Int: [CityDatum]]
     }
 
     private let bundle: Bundle
@@ -64,16 +64,16 @@ private actor Store {
             throw LocationKitError.decodingFailed
         }
 
-        let countries = dto.map { Country(id: $0.id, name: $0.name) }
+        let countries = dto.map { CountryDatum(id: $0.id, name: $0.name) }
 
-        var statesByCountryId: [Int: [State]] = [:]
-        var citiesByStateId: [Int: [City]] = [:]
+        var statesByCountryId: [Int: [StateDatum]] = [:]
+        var citiesByStateId: [Int: [CityDatum]] = [:]
 
         for country in dto {
-            let states = (country.states ?? []).map { State(id: $0.id, name: $0.name, countryId: country.id) }
+            let states = (country.states ?? []).map { StateDatum(id: $0.id, name: $0.name, countryId: country.id) }
             statesByCountryId[country.id] = states
             for state in (country.states ?? []) {
-                let cities = (state.cities ?? []).map { City(id: $0.id, name: $0.name, stateId: state.id) }
+                let cities = (state.cities ?? []).map { CityDatum(id: $0.id, name: $0.name, stateId: state.id) }
                 citiesByStateId[state.id] = cities
             }
         }
