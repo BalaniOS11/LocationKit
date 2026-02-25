@@ -7,14 +7,13 @@ public struct CombinedJSONLocationProvider: LocationProviding {
     private let store: Store
 
     public init(
-        bundle: Bundle,
         decoder: JSONDecoder = .init(),
         resourceName: String = "countries+states+cities"
     ) {
-        self.bundle = bundle
+        self.bundle = .module
         self.decoder = decoder
         self.resourceName = resourceName
-        self.store = Store(bundle: bundle, decoder: decoder, resourceName: resourceName)
+        self.store = Store(bundle: .module, decoder: decoder, resourceName: resourceName)
     }
 
     public func fetchCountries() async throws -> [CountryDatum] {
@@ -53,7 +52,7 @@ private actor Store {
 
     func load() throws -> Cache {
         if let cached { return cached }
-        guard let url = bundle.url(forResource: resourceName, withExtension: "json") else {
+        guard let url = Bundle.module.url(forResource: resourceName, withExtension: "json") else {
             throw LocationKitError.resourceMissing("\(resourceName).json")
         }
         let data = try Data(contentsOf: url)

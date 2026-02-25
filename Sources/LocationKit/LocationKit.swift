@@ -8,7 +8,7 @@ public extension LocationKit {
     }
 
     static func bundledCombinedJSON(resourceName: String = "countries+states+cities") -> LocationProviding {
-        CombinedJSONLocationProvider(bundle: .module, resourceName: resourceName)
+        CombinedJSONLocationProvider(resourceName: resourceName)
     }
 
     static func remoteWithCombinedBundledFallback(baseURL: URL, session: URLSession = .shared) -> LocationProviding {
