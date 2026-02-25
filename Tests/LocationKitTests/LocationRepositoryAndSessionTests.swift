@@ -2,6 +2,22 @@ import XCTest
 @testable import LocationKit
 
 final class LocationRepositoryAndSessionTests: XCTestCase {
+    func testBundledCombinedJSONDecodes() async throws {
+        let provider = CombinedJSONLocationProvider(bundle: .module)
+        let countries = try await provider.fetchCountries()
+        XCTAssertFalse(countries.isEmpty)
+
+        let afghanistan = countries.first(where: { $0.id == 1 })
+        XCTAssertEqual(afghanistan?.name, "Afghanistan")
+
+        let states = try await provider.fetchStates(countryId: 1)
+        XCTAssertFalse(states.isEmpty)
+
+        // From the bundled file, Afghanistan has state id 3901 (Badakhshan).
+        let cities = try await provider.fetchCities(stateId: 3901)
+        XCTAssertFalse(cities.isEmpty)
+    }
+
     func testSelectionFlowResetsChildrenAndFetches() async throws {
         let provider = CountingProvider()
         let repository = LocationRepository(provider: provider)
