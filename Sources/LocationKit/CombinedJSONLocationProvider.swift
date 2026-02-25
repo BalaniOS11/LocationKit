@@ -7,7 +7,7 @@ public struct CombinedJSONLocationProvider: LocationProviding {
     private let store: Store
 
     public init(
-        bundle: Bundle = .module,
+        bundle: Bundle,
         decoder: JSONDecoder = .init(),
         resourceName: String = "countries+states+cities"
     ) {
@@ -18,15 +18,18 @@ public struct CombinedJSONLocationProvider: LocationProviding {
     }
 
     public func fetchCountries() async throws -> [Country] {
-        try await store.load().countries
+        let cache = try await store.load()
+        return cache.countries
     }
 
     public func fetchStates(countryId: Int) async throws -> [State] {
-        try await store.load().statesByCountryId[countryId] ?? []
+        let cache = try await store.load()
+        return cache.statesByCountryId[countryId] ?? []
     }
 
     public func fetchCities(stateId: Int) async throws -> [City] {
-        try await store.load().citiesByStateId[stateId] ?? []
+        let cache = try await store.load()
+        return cache.citiesByStateId[stateId] ?? []
     }
 }
 
@@ -101,4 +104,3 @@ private struct CityDTO: Decodable {
     let id: Int
     let name: String
 }
-

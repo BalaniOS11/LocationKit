@@ -118,61 +118,6 @@ public struct RemoteLocationProvider: LocationProviding {
     }
 }
 
-public struct BundledJSONLocationProvider: LocationProviding {
-    private let bundle: Bundle
-    private let decoder: JSONDecoder
-    private let countriesResource: String
-    private let statesResource: String
-    private let citiesResource: String
-
-    /// Initializes a `BundledJSONLocationProvider` with a required `Bundle` from which to load JSON resources.
-    /// - Parameters:
-    ///   - bundle: The `Bundle` containing the JSON resource files. Must be explicitly provided.
-    ///   - decoder: JSONDecoder instance used to decode the JSON data. Defaults to a new decoder.
-    ///   - countriesResource: The resource filename for countries JSON (without extension). Defaults to `"countries"`.
-    ///   - statesResource: The resource filename for states JSON (without extension). Defaults to `"states"`.
-    ///   - citiesResource: The resource filename for cities JSON (without extension). Defaults to `"cities"`.
-    public init(
-        bundle: Bundle,
-        decoder: JSONDecoder = .init(),
-        countriesResource: String = "countries",
-        statesResource: String = "states",
-        citiesResource: String = "cities"
-    ) {
-        self.bundle = bundle
-        self.decoder = decoder
-        self.countriesResource = countriesResource
-        self.statesResource = statesResource
-        self.citiesResource = citiesResource
-    }
-
-    public func fetchCountries() async throws -> [Country] {
-        try loadJSON(name: countriesResource)
-    }
-
-    public func fetchStates(countryId: Int) async throws -> [State] {
-        let all: [State] = try loadJSON(name: statesResource)
-        return all.filter { $0.countryId == countryId }
-    }
-
-    public func fetchCities(stateId: Int) async throws -> [City] {
-        let all: [City] = try loadJSON(name: citiesResource)
-        return all.filter { $0.stateId == stateId }
-    }
-
-    private func loadJSON<T: Decodable>(name: String) throws -> T {
-        guard let url = bundle.url(forResource: name, withExtension: "json") else {
-            throw LocationKitError.resourceMissing("\(name).json")
-        }
-        let data = try Data(contentsOf: url)
-        do {
-            return try decoder.decode(T.self, from: data)
-        } catch {
-            throw LocationKitError.decodingFailed
-        }
-    }
-}
-
 public struct FallbackLocationProvider: LocationProviding {
     private let primary: LocationProviding
     private let fallback: LocationProviding
@@ -194,4 +139,3 @@ public struct FallbackLocationProvider: LocationProviding {
         do { return try await primary.fetchCities(stateId: stateId) } catch { return try await fallback.fetchCities(stateId: stateId) }
     }
 }
-
