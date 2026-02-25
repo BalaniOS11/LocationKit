@@ -1,0 +1,6 @@
+[
+  { "id": 1001, "name": "San Francisco", "state_id": 101 },
+  { "id": 1002, "name": "Los Angeles", "state_id": 101 },
+  { "id": 1003, "name": "New York City", "state_id": 102 },
+  { "id": 2001, "name": "Toronto", "state_id": 201 }
+]
