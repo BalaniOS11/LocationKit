@@ -72,8 +72,15 @@ public struct SearchableSheetPicker<Item: Identifiable & Hashable>: View {
             NavigationStack {
                 List {
                     if filteredItems.isEmpty {
-                        ContentUnavailableView {
+                        if #available(iOS 17.0, *) {
+                            ContentUnavailableView {
+                                Text(emptyMessage ?? "No results")
+                            }
+                        } else {
                             Text(emptyMessage ?? "No results")
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding()
                         }
                     } else {
                         ForEach(filteredItems, id: \.self) { item in
